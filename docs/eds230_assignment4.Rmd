@@ -1,0 +1,39 @@
+---
+title: 'EDS 230/ESM232: Assignment 4: Sensitivity Analysis'
+author: "Clarissa Boyajian, Scout Leonard, Nikole Vannest"
+date: '`r format(Sys.time(), "%m/%d/%Y")`'
+output: 
+  pdf_document:
+    toc: false
+    number_sections: yes
+header-includes:
+  - \setlength{\parindent}{1em}
+  - \usepackage{float}
+---
+
+# Load Libraries
+
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load packages
+packages=c("here",
+           "tidyverse",
+           "ggplot2",
+          "pse" )
+
+for (i in packages) {
+  if (require(i,character.only=TRUE)==FALSE) {
+    install.packages(i,repos='http://cran.us.r-project.org')
+  }
+  else {
+    require(i,character.only=TRUE)
+  }
+}
+
+#read in R scripts
+```
+
+
+# Read in Data
+
