@@ -50,24 +50,19 @@ part_2_answer <- atm_conductance(h = 10,
                                  v = 250)
 ```
 
-The estimated atmospheric conductance for this forest is `r part_2_answer` Siemens per centimeter.
+The estimated atmospheric conductance for this forest is `r round(part_2_answer, 2)` Siemens per centimeter.
 
 # Part 3
 
-Do a sensitivity analysis: 
+Do a sensitivity analysis that considers the sensitivity of your estimate to uncertainty in the following parameters and inputs:
 
-_Consider the sensitivity of your estimate to uncertainty in the following parameters and inputs_
+- **v** _Windspeeds v are normally distributed with a mean of 250 cm/s with a standard deviation of 30 cm/s_
+- **h** _For vegetation height assume that height is somewhere between 9.5 and 10.5 m (but any value in that range is equally likely)_ 
+- **kd**, **k0** _For the kd and k0 parameters you can assume that they are normally distributed with standard deviation of 1% of their default values_
 
-- h
-- kd
-- k0
-- v
+\newpage
 
-_Windspeeds v are normally distributed with a mean of 250 cm/s with a standard deviation of 30 cm/s_
-
-_For vegetation height assume that height is somewhere between 9.5 and 10.5 m (but any value in that range is equally likely)_ 
-
-_For the kd and k0 parameters you can assume that they are normally distributed with standard deviation of 1% of their default values_
+## Part 3A
 
 Make a list of params: 
 ```{r}
@@ -88,8 +83,7 @@ q.arg = list(list(min = 9.5, max = 10.5),
              list(mean = 0.1, sd = 0.1 * 0.01))
 ```
 
-## Part 3A
-
+Generate parameter values for the 4 parameters:
 ```{r}
 sens_atmos_conduction = LHS(NULL, 
                   factors, # list of parameters
@@ -101,37 +95,62 @@ sens_atmos_conduction = LHS(NULL,
 
 ## Part 3B
 
+Run atmospheric conductance model with parameters:
+
 ```{r}
 sensitivity_parameters <- get.data(sens_atmos_conduction)
 
 conduction <- sensitivity_parameters %>% pmap(atm_conductance)
+
+conduction_sd <- t(as.data.frame(conduction))
+conduction_sd <- as.data.frame(conduction_sd)
+names(conduction_sd) <- c("conductance")
+rownames(conduction_sd) <- 1:nrow(conduction_sd)
+
+head(conduction_sd)
 ```
 
 ## Part 3C
 
-```{r}
-t <- transpose(as.data.frame(conduction))
-names(t) <- c("conductance")
+Plot conductance estimates in a way that accounts for parameter uncertainty
 
-t %>% ggplot(aes(y = conductance)) +
+```{r, fig.height=4, fig.width=4}
+conduction_sd %>% ggplot(aes(y = conductance)) +
   geom_boxplot() +
   ggtitle("Conductance Sensitivity Analysis") +
   ylab("Conductance") +
-  xlab("")
-# remove values on x axis
+  xlab("") # remove values on x axis
 ```
+
+\newpage
 
 ## Part 3D
 
+Plot conductance estimates against each of your parameters
+
 ```{r}
 sens_cond <- pse::tell(sens_atmos_conduction,
-                       t(as.matrix(t)))
+                       t(as.matrix(conduction_sd)))
 
 pse::plotscatter(sens_cond, col="blue", cex=5)
 ```
+
+\newpage
+
 ## Part 3E
 
-```{r}
+ Estimate the Partial Rank Correlation Coefficients
 
+```{r, fig.height=4, fig.width=4}
+pse::plotprcc(sens_cond)
+
+sens_cond$prcc
 ```
+
+## Part 3F
+
+Our results show that aerodynamic conductance is most sensitive to windspeed (v). Therefore you should focus on windspeed if you want to reduce uncertainty in aerodynamic conductance estimates. Because we know that climate change can impact average windspeeds, this tells us that plant water use can be sensitive to climate change. 
+
+
+
 
