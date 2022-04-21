@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 packages=c("here",
            "tidyverse",
            "ggplot2",
-          "pse" )
+          "pse")
 
 for (i in packages) {
   if (require(i,character.only=TRUE)==FALSE) {
@@ -32,8 +32,85 @@ for (i in packages) {
 }
 
 #read in R scripts
+source(here("R", "atm_conductance.R"))
 ```
 
+Often when we are estimating vegetation or crop water use we need to know the atmospheric conductance - which is essentially how easily water diffuses into the air and depends largely on windspeed (you get more evaporation in windier conditions) Atmospheric conductance is also influenced by the vegetation itself and the turbulence it creates
 
-# Read in Data
+# Part 1
+
+Code a function to compute atmospheric conductance Cat (how easily vapor diffuses from vegetation surfaces)
+
+# Part 2
+
+You are estimating the atmospheric conductance for a forest that is 10 m high (the accuracy of that measurement is +/- 0.5 m ) Windspeeds v in this region are normally distributed with a mean of 250 cm/s with a standard deviation of 30 cm/s
+
+```{r}
+part_2_answer <- atm_conductance(h = 10,
+                                 v = 250)
+```
+
+The estimated atmospheric conductance for this forest is `r part_2_answer` Siemens per centimeter.
+
+# Part 3
+
+Do a sensitivity analysis: 
+
+_Consider the sensitivity of your estimate to uncertainty in the following parameters and inputs_
+
+- h
+- kd
+- k0
+- v
+
+_Windspeeds v are normally distributed with a mean of 250 cm/s with a standard deviation of 30 cm/s_
+
+_For vegetation height assume that height is somewhere between 9.5 and 10.5 m (but any value in that range is equally likely)_ 
+
+_For the kd and k0 parameters you can assume that they are normally distributed with standard deviation of 1% of their default values_
+
+Make a list of params: 
+```{r}
+factors <- c("h", "v", "kd", "ko")
+```
+
+Decide how many parameter sets to run: 
+```{r}
+nsets = 100
+```
+
+Set distributions for parameters: 
+```{r}
+q = c("qunif", "qnorm", "qnorm", "qnorm")
+q.arg = list(list(min = 9.5, max = 10.5), 
+             list(mean = 250, sd = 30), 
+             list(mean = 0.7, sd = 0.7 * 0.01),
+             list(mean = 0.1, sd = 0.1 * 0.01))
+```
+
+## Part 1A
+
+```{r}
+sens_atmos_conduction = LHS(NULL, 
+                  factors, # list of parameters
+                  nsets, # number of param sets to run
+                  q, # how to make list of argumentse
+                  q.arg # parameters of list of arguments
+                  ) 
+```
+
+## Part 1B
+
+```{r}
+sensitivity_parameters <- get.data(sens_atmos_conduction)
+
+conduction <- sensitivity_parameters %>% pmap(atm_conductance)
+```
+
+## Part 1C
+
+```{r}
+conduction_sd <- conduction %>% 
+  as.data.frame()
+```
 
