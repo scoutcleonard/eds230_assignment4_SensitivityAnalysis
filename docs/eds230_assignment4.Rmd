@@ -88,7 +88,7 @@ q.arg = list(list(min = 9.5, max = 10.5),
              list(mean = 0.1, sd = 0.1 * 0.01))
 ```
 
-## Part 1A
+## Part 3A
 
 ```{r}
 sens_atmos_conduction = LHS(NULL, 
@@ -99,7 +99,7 @@ sens_atmos_conduction = LHS(NULL,
                   ) 
 ```
 
-## Part 1B
+## Part 3B
 
 ```{r}
 sensitivity_parameters <- get.data(sens_atmos_conduction)
@@ -107,10 +107,31 @@ sensitivity_parameters <- get.data(sens_atmos_conduction)
 conduction <- sensitivity_parameters %>% pmap(atm_conductance)
 ```
 
-## Part 1C
+## Part 3C
 
 ```{r}
-conduction_sd <- conduction %>% 
-  as.data.frame()
+t <- transpose(as.data.frame(conduction))
+names(t) <- c("conductance")
+
+t %>% ggplot(aes(y = conductance)) +
+  geom_boxplot() +
+  ggtitle("Conductance Sensitivity Analysis") +
+  ylab("Conductance") +
+  xlab("")
+# remove values on x axis
+```
+
+## Part 3D
+
+```{r}
+sens_cond <- pse::tell(sens_atmos_conduction,
+                       t(as.matrix(t)))
+
+pse::plotscatter(sens_cond, col="blue", cex=5)
+```
+## Part 3E
+
+```{r}
+
 ```
 

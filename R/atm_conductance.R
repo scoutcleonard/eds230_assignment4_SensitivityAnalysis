@@ -19,7 +19,7 @@ atm_conductance <- function(h, v, kd = 0.7, ko = 0.1){
   # compute function params and atmospheric conductance 
   zd = kd*h
   zo = ko*h
-  c_at <- v/(6.25*((log(zm-zd)^2)/zo))
+  c_at <- v/(6.25*((log((zm-zd)/zo)^2)))
   
   #return atmospheric conductance
   return(c_at)
