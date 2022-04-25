@@ -152,7 +152,7 @@ sens_cond$prcc
 
 ## Part 3F
 
-\noindent Our results show that aerodynamic conductance is most sensitive to windspeed (v). Therefore you should focus on windspeed if you want to reduce uncertainty in aerodynamic conductance estimates. Because we know that climate change can impact average windspeeds, this tells us that plant water use can be sensitive to climate change. 
+\noindent Our results show that aerodynamic conductance is most sensitive to windspeed (v). Therefore you should focus on windspeed if you want to reduce uncertainty in aerodynamic conductance estimates. Because we know that climate change can impact average windspeeds, this tells us that plant water use can be sensitive to climate change. Additionally, climate change will impact other factors that change aerodynamic conductance that are not accounted for in our model, although these would affect the aerodynamic conductance in a way that impacts our model accuracy.
 
 
 
