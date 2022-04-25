@@ -5,11 +5,13 @@ date: '`r format(Sys.time(), "%m/%d/%Y")`'
 output: 
   pdf_document:
     toc: false
-    number_sections: yes
+    number_sections: no
 header-includes:
   - \setlength{\parindent}{1em}
   - \usepackage{float}
 ---
+
+\noindent Often when we are estimating vegetation or crop water use we need to know the atmospheric conductance - which is essentially how easily water diffuses into the air and depends largely on windspeed (you get more evaporation in windier conditions) Atmospheric conductance is also influenced by the vegetation itself and the turbulence it creates
 
 # Load Libraries
 
@@ -35,46 +37,47 @@ for (i in packages) {
 source(here("R", "atm_conductance.R"))
 ```
 
-Often when we are estimating vegetation or crop water use we need to know the atmospheric conductance - which is essentially how easily water diffuses into the air and depends largely on windspeed (you get more evaporation in windier conditions) Atmospheric conductance is also influenced by the vegetation itself and the turbulence it creates
-
 # Part 1
 
-Code a function to compute atmospheric conductance Cat (how easily vapor diffuses from vegetation surfaces)
+\noindent Code a function to compute atmospheric conductance Cat (how easily vapor diffuses from vegetation surfaces)
+
+_See repository directory_ `R/atm_conductance.R` _to view coded function for atmospheric conductance._
 
 # Part 2
 
-You are estimating the atmospheric conductance for a forest that is 10 m high (the accuracy of that measurement is +/- 0.5 m ) Windspeeds v in this region are normally distributed with a mean of 250 cm/s with a standard deviation of 30 cm/s
+\noindent You are estimating the atmospheric conductance for a forest that is 10 m high (the accuracy of that measurement is +/- 0.5 m ) Windspeeds v in this region are normally distributed with a mean of 250 cm/s with a standard deviation of 30 cm/s
 
 ```{r}
 part_2_answer <- atm_conductance(h = 10,
                                  v = 250)
 ```
 
-The estimated atmospheric conductance for this forest is `r round(part_2_answer, 2)` Siemens per centimeter.
+\noindent The estimated atmospheric conductance for this forest is `r round(part_2_answer, 2)` Siemens per centimeter.
+
+\newpage
 
 # Part 3
 
-Do a sensitivity analysis that considers the sensitivity of your estimate to uncertainty in the following parameters and inputs:
+\noindent Do a sensitivity analysis that considers the sensitivity of your estimate to uncertainty in the following parameters and inputs:
 
 - **v** _Windspeeds v are normally distributed with a mean of 250 cm/s with a standard deviation of 30 cm/s_
 - **h** _For vegetation height assume that height is somewhere between 9.5 and 10.5 m (but any value in that range is equally likely)_ 
 - **kd**, **k0** _For the kd and k0 parameters you can assume that they are normally distributed with standard deviation of 1% of their default values_
 
-\newpage
-
 ## Part 3A
 
-Make a list of params: 
+\noindent Make a list of params: 
+
 ```{r}
 factors <- c("h", "v", "kd", "ko")
 ```
 
-Decide how many parameter sets to run: 
+\noindent Decide how many parameter sets to run: 
 ```{r}
 nsets = 100
 ```
 
-Set distributions for parameters: 
+\noindent Set distributions for parameters: 
 ```{r}
 q = c("qunif", "qnorm", "qnorm", "qnorm")
 q.arg = list(list(min = 9.5, max = 10.5), 
@@ -83,7 +86,7 @@ q.arg = list(list(min = 9.5, max = 10.5),
              list(mean = 0.1, sd = 0.1 * 0.01))
 ```
 
-Generate parameter values for the 4 parameters:
+\noindent Generate parameter values for the 4 parameters:
 ```{r}
 sens_atmos_conduction = LHS(NULL, 
                   factors, # list of parameters
@@ -95,7 +98,7 @@ sens_atmos_conduction = LHS(NULL,
 
 ## Part 3B
 
-Run atmospheric conductance model with parameters:
+\noindent Run atmospheric conductance model with parameters:
 
 ```{r}
 sensitivity_parameters <- get.data(sens_atmos_conduction)
@@ -112,7 +115,7 @@ head(conduction_sd)
 
 ## Part 3C
 
-Plot conductance estimates in a way that accounts for parameter uncertainty
+\noindent Plot conductance estimates in a way that accounts for parameter uncertainty
 
 ```{r, fig.height=4, fig.width=4}
 conduction_sd %>% ggplot(aes(y = conductance)) +
@@ -126,7 +129,7 @@ conduction_sd %>% ggplot(aes(y = conductance)) +
 
 ## Part 3D
 
-Plot conductance estimates against each of your parameters
+\noindent Plot conductance estimates against each of your parameters
 
 ```{r}
 sens_cond <- pse::tell(sens_atmos_conduction,
@@ -139,7 +142,7 @@ pse::plotscatter(sens_cond, col="blue", cex=5)
 
 ## Part 3E
 
- Estimate the Partial Rank Correlation Coefficients
+\noindent Estimate the Partial Rank Correlation Coefficients
 
 ```{r, fig.height=4, fig.width=4}
 pse::plotprcc(sens_cond)
@@ -149,7 +152,7 @@ sens_cond$prcc
 
 ## Part 3F
 
-Our results show that aerodynamic conductance is most sensitive to windspeed (v). Therefore you should focus on windspeed if you want to reduce uncertainty in aerodynamic conductance estimates. Because we know that climate change can impact average windspeeds, this tells us that plant water use can be sensitive to climate change. 
+\noindent Our results show that aerodynamic conductance is most sensitive to windspeed (v). Therefore you should focus on windspeed if you want to reduce uncertainty in aerodynamic conductance estimates. Because we know that climate change can impact average windspeeds, this tells us that plant water use can be sensitive to climate change. 
 
 
 
